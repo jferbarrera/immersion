@@ -1,0 +1,761 @@
+************************************************ UAN 19/09/2019
+
+Instalation of Immersion framework and libraries
+
+References
+==========
+
+[1] https://cv-tricks.com/installation/opencv-4-1-ubuntu18-04/ 
+
+================
+1. PREREQUISITES
+================
+
+1.1 linux version: 18.04.3 LTS
+1.2 create /immersion/libs directory on root disk
+
+1.3 Install nvidia drivers
+==========================
+
+Check the model of your NVIDIA GPU
+>> ubuntu-drivers devices
+
+add the PPA and install the latest NVIDIA
+>> sudo add-apt-repository ppa:graphics-drivers/ppa
+>> sudo apt update
+
+Install recommended 
+>> ubuntu-drivers devices
+Look for the recommended driver and install it
+>> sudo apt-get install nvidia-driver-440
+
+Install nvidia controll
+>> sudo apt-get install nvidia-settings
+
+**************************
+2. BUILD ESSENTIAL PACKAGE
+**************************
+
+2.1 Programming tools and libs
+==============================
+
+- autoconf
+- automake
+- libtool
+- make
+- g++
+- unzip
+>> sudo apt-get install autoconf automake libtool curl make g++ unzip
+
+2.2 Programming tools and libs
+==============================
+
+- cmake and ccmake
+- gcc g++
+- checkinstall
+- yasm
+
+>> sudo apt-get install cmake cmake-curses-gui
+>> sudo apt-get install gcc g++
+>> sudo apt-get install checkinstall yasm
+>> sudo apt-get install gfortran
+
+2.3 Monitoring of hardware temperature
+======================================
+>> sudo apt install lm-sensors hddtemp
+
+After installation type the following in terminal
+>> watch sensors
+
+******************************
+3. INSTALL ESSENTIAL LIBRARIES
+******************************
+
+3.0. Install CUDA Toolkit 10.2
+==============================
+
+Installing from a debian file
+
+Download pin and install pi
+>> cd Downloads
+>> wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+
+>> sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+
+Download package
+>> wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda-repo-ubuntu1804-10-2-local-10.2.89-440.33.01_1.0-1_amd64.deb
+
+Install package
+>> sudo dpkg -i cuda-repo-ubuntu1804-10-2-local-10.2.89-440.33.01_1.0-1_amd64.deb
+
+Install key
+>> sudo apt-key add /var/cuda-repo-10-2-local-10.2.89-440.33.01/7fa2af80.pub
+
+Update 
+>> sudo apt-get update
+
+Instal cuda toolkit
+>> sudo apt-get -y install cuda
+
+3.0. Install cuDNN
+==================
+
+Navigate to your <cudnnpath> directory containing cuDNN Debian file
+
+Install the runtime library, for example:
+>> sudo dpkg -i libcudnn7_7.6.5.32-1+cuda10.2_amd64.deb
+
+Install the developer library, for example:
+>> sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
+
+Install the code samples and the cuDNN Library User Guide, for example:
+>> sudo dpkg -i libcudnn7-doc_7.6.5.32-1+cuda10.2_amd64.deb
+
+3.1. Install eigen
+==================
+
+>> sudo git clone https://github.com/eigenteam/eigen-git-mirror.git
+
+3.2. Install protobuf
+=====================
+
+>> sudo git clone https://github.com/protocolbuffers/protobuf.git
+>> cd protobuf
+>> sudo git submodule update --init --recursive
+>> sudo ./autogen.sh
+>> sudo ./configure --prefix=/immersion/libs/protobuf/install
+>> sudo make
+>> sudo make check
+
+To install execute the following: 
+
+>> sudo make install
+>> sudo ldconfig # refresh shared library cache.
+
+3.3. Installing Python
+======================
+
+3.3.a Installing the required Python version
+
+- python 2
+>> sudo apt-get install python-dev python-pip
+
+- python 3
+>> sudo apt-get install python3-dev python3-pip
+
+- numpy for python 2 and 3
+>> sudo -H pip2 install -U pip numpy
+>> sudo -H pip3 install -U pip numpy
+
+3.3.b Installing the Virtual Environment
+
+>> sudo pip2 install virtualenv virtualenvwrapper
+>> sudo pip3 install virtualenv virtualenvwrapper
+
+3.3.c Modify .bashrc file
+
+Run the following commands in the terminal one by one
+>> echo "# Virtual Environment Wrapper"  >> ~/.bashrc
+>> echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+>> source ~/.bashrc
+
+3.3.d Creating Virtual Environment and Installing basic Python libraries
+
+Run the following commands in different terminals:
+
+>> mkvirtualenv opencv_source_2 -p python2
+>> workon opencv_source_2
+>> sudo pip install numpy scipy matplotlib scikit-image scikit-learn ipython
+
+>> mkvirtualenv opencv_source_3 -p python3
+>> workon opencv_source_3
+>> sudo pip install numpy scipy matplotlib scikit-image scikit-learn ipython
+
+To deactivate a enviroment
+>> deactivate env_name
+
+3.X Install TensorRT
+====================
+
+Install TensorRT from the Debian local repo package.
+
+>> sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.2-trt7.0.0.11-ga-20191216_1-1_amd64.deb
+>> sudo apt-key add /var/nv-tensorrt-repo-cuda10.2-trt7.0.0.11-ga-20191216/7fa2af80.pub
+
+>> sudo apt-get update
+>> sudo apt-get install tensorrt
+
+If using Python 2.7:
+>> sudo apt-get install python-libnvinfer-dev
+
+The following additional packages will be installed: python-libnvinfer
+
+If using Python 3.x:
+>> sudo apt-get install python3-libnvinfer-dev
+
+The following additional packages will be installed: python3-libnvinfer
+
+If you plan to use TensorRT with TensorFlow:
+>> sudo apt-get install uff-converter-tf
+
+
+3.X Install Tensor Flow
+=======================
+
+Create a new virtual environment by choosing a Python interpreter
+>> mkvirtualenv ml_py3 -p python3
+
+Activate the virtual environment using a shell-specific command: 
+>> workon ml_py3
+
+When virtualenv is active, your shell prompt is prefixed with (ml_py3).
+Install packages within a virtual environment without affecting the host system setup. Start by upgrading pip: 
+
+>>(ml_py3) pip install --upgrade pip
+>>(ml_py3) pip list  # show packages installed within the virtual environment
+
+Install the TensorFlow pip package
+>>(ml_py3) pip install --upgrade tensorflow  <<---gpu error
+>>(ml_py3) pip install tensorflow-gpu==2.0.0
+
+Verify the install:
+>>(ml_py3) python -c "import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+
+3.Y Build from source
+=====================
+
+Install Python and the TensorFlow package dependencies
+>> sudo apt install python-dev python-pip  # or python3-dev python3-pip
+
+If you want to build Java code using Bazel, install a JDK:
+
+Ubuntu 16.04 (LTS) uses OpenJDK 8 by default:
+>> sudo apt-get install openjdk-8-jdk
+
+Ubuntu 18.04 (LTS) uses OpenJDK 11 by default:
+>> sudo apt-get install openjdk-11-jdk
+
+Dowload bazel installer
+>> cd Download
+>> wget https://github.com/bazelbuild/bazel/releases/download/0.29.1/bazel-0.29.1-installer-linux-x86_64.sh
+master
+>> wget https://github.com/bazelbuild/bazel/releases/download/1.2.1/bazel-1.2.1-installer-linux-x86_64.sh
+
+Running bazel installer
+>> chmod +x bazel-0.29.1-installer-linux-x86_64.sh
+>> ./bazel-0.29.1-installer-linux-x86_64.sh --user
+
+master
+>> chmod +x bazel-1.2.1-installer-linux-x86_64.sh
+>> ./bazel-1.2.1-installer-linux-x86_64.sh --user
+
+Adding path to bazel binary to bash
+>> export PATH="$PATH:$HOME/bin"
+
+Clonning tensor flow
+>> sudo git clone https://github.com/tensorflow/tensorflow
+>> cd tensorflow
+>> sudo git checkout v2.1.0 (esto no es necesario)
+
+change the user owning 
+>> cd ..
+>> sudo chown username: tensorflow -R
+
+Create a Python 3 virtual environment
+>> mkvirtualenv ml_py3  --python=python3
+>> mkvirtualenv ml_py2  --python=python2
+
+Install the TensorFlow pip package dependencies:
+>>(ml_py3) pip install -U pip six numpy wheel setuptools mock 'future>=0.17.1'
+>>(ml_py3) pip install -U keras_applications --no-deps
+>>(ml_py3) pip install -U keras_preprocessing --no-deps
+>>(ml_py3) pip install -U enum34
+
+Configure 
+./configure
+
+Carefully go through the options. You can leave most defaults, but do specify the required CUDA compute capabilities (as below, or similar):
+| CUDA support -> Y
+| CUDA compute capability -> 7.5
+| rtTensor -> Y for pytho 2
+| rtTensor -> N for pytho 3
+
+To make the TensorFlow package builder with GPU support:
+>>(ml_py3) bazel build --config=opt -c opt //tensorflow/tools/pip_package:build_pip_package --verbose_failures
+
+Build the package
+>>(ml_py3) mkdir build build_py3
+>>(ml_py3) ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /immersion/libs/tensorflow/build_py3
+
+Install the package
+>>(ml_py3) cd build_py3
+>>(ml_py3) pip install tensorflow-2.1.0-cp36-cp36m-linux_x86_64.whl
+
+for cleanning a building and build again
+>>(ml_py3) bazel clean --expunge
+
+Install jupyter lab
+===================
+>>(ml_py3) sudo apt install nodejs
+>>(ml_py3) pip install jupyterlab
+
+running jupyter lab
+>>(ml_py3) jupyter lab
+
+3.w Install pythorch
+====================
+>>(ml_py3) pip install torch torchvision
+
+test gpu support
+python -c "import torch;print(torch.cuda.is_available())"
+
+3.z Install Keras
+=================
+
+Install deps
+>>(ml_py3) pip install numpy scipy
+>>(ml_py3) pip install scikit-learn
+>>(ml_py3) pip install pillow
+>>(ml_py3) pip install h5py
+>>(ml_py3) sudo apt-get install graphviz
+>>(ml_py3) pip install pydot
+
+Install keras
+>>(ml_py3) pip install keras
+
+
+3.4. Install Intel(R) Threading Building Blocks
+===============================================
+
+Optional step, only for intel-s processors
+
+1.  Unpack the package in a directory to which you have write
+    access.
+
+    >> cd <directory>
+    >> tar -xzf l_tbb_<version>.<package#>.tgz
+
+2.  Run the installation script.  Execute the script in the
+    directory where the package was unpacked in the previous step.
+
+    >> cd <directory>/l_tbb_<version>.<package#>
+    >> sudo ./install.sh
+
+3.4. Installing OpenCV
+======================
+
+3.4.1 Install openCV dependencies
+=================================
+
+- libjpeg
+- libjasper
+- libpng
+>> sudo apt-get install libjpeg-dev libpng-dev
+
+- libjasper
+>> sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+>> sudo apt update
+>> sudo apt install libjasper1 libjasper-dev
+
+- libtiff
+>> sudo apt-get install libtiff5-dev
+
+- libopenexr
+>> sudo apt-get install libopenexr-dev
+
+- libavcodec
+- libavformat-dev
+- libdc1394-22-dev
+>> sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev
+
+- libxine2-dev
+- libv4l-dev
+>> sudo apt-get install libxine2-dev libv4l-dev
+
+- libgstreamer
+>> sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+
+- qt5
+- libgtk 2 and 3
+- libtbb
+>> sudo apt-get install qt5-default libgtk2.0-dev libtbb-dev
+>> sudo apt-get install libgtk-3-dev
+
+- libatlas
+>> sudo apt-get install libatlas-base-dev
+
+- libfaac
+- libmp3
+- libtheora
+>> sudo apt-get install libfaac-dev libmp3lame-dev libtheora-dev
+
+- liborbis
+- libxvidcore
+>> sudo apt-get install libvorbis-dev libxvidcore-dev
+
+- libopencore
+>> sudo apt-get install libopencore-amrnb-dev libopencore-amrwb-dev
+
+- x264
+- v4l-utils
+>> sudo apt-get install x264 v4l-utils
+
+- libprotobuf-dev (it installed above)
+>> sudo apt-get install libprotobuf-dev protobuf-compiler
+
+- libgoogle-glog
+- libgflags
+>> sudo apt-get install libgoogle-glog-dev libgflags-dev
+
+- libgphoto2
+- libhdf5
+- doxygen
+>> sudo apt-get install libgphoto2-dev libeigen3-dev libhdf5-dev doxygen
+
+- openmp
+>> sudo apt-get install libomp-dev
+
+- ffmepg 3
+>> sudo apt install ffmpeg
+
+3.4.2 Downloading OpenCV 4.1.0 and OpenCV Contrib
+=================================================
+
+Download OpenCV from Github
+
+>> sudo git clone https://github.com/opencv/opencv.git
+>> cd opencv
+>> sudo git checkout 4.1.0
+>> cd ..
+
+Download OpenCV_contrib from Github
+
+>> sudo git clone https://github.com/opencv/opencv_contrib.git
+>> cd opencv_contrib
+>> sudo git checkout 4.1.0
+>> cd..
+
+3.4.3. Using CMake to build the library
+======================================
+
+Make sure that you have activated your virtual environment
+
+>> workon opencv_source_2     # For Python 2
+>> workon opencv_source_3     # For Python 3
+
+to make
+
+>> sudo mkdir build
+>> cd build
+>> sudo ccmake ..
+
+ccmake flags:
+ WITH_TBB=ON
+ WITH_V4L=ON
+ WITH_QT=ON
+ WITH_OPENGL=ON
+ BUILD_PNG=ON
+ OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules
+ CMAKE_INSTALL_PREFIX=/usr/local
+ OPENCV_GENERATE_PKGCONFIG=ON
+
+3.4.4. Building openCV
+======================
+
+To find the number of threads compatible in your machine run the following command
+>> nproc
+
+To compile
+>> sudo make -j14
+
+3.4.5. Modifying opencv4.pc file
+================================
+
+>> cd unix-install/
+>> sudo vi opencv4.pc
+
+The file will look something like this:
+
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir_old=${prefix}/include/opencv4/opencv       <= You have to modify this line
+includedir_new=${prefix}/include/opencv4
+
+Name: OpenCV
+Description: Open Source Computer Vision Library
+Version: 4.1.0
+Libs: -L${exec_prefix}/lib -lopencv_gapi -lopencv_stitching -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_cvv -lopencv_dnn_objdetect -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hdf -lopencv_hfs -lopencv_img_hash -lopencv_line_descriptor -lopencv_quality -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_sfm -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_datasets -lopencv_text -lopencv_dnn -lopencv_plot -lopencv_videostab -lopencv_video -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+Libs.private: -ldl -lm -lpthread -lrt -L/usr/lib/x86_64-linux-gnu -lGL -lGLU
+Cflags: -I${includedir_old} -I${includedir_new}
+
+Replace the specified line with the following line:
+
+includedir_old=${prefix}/include/opencv4/opencv2
+
+Save the file and exit
+
+3.4.6 Install openCV
+====================
+
+Install opencv by running the following commands (don't do it):
+
+>> sudo make install
+>> sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
+>> sudo ldconfig
+
+3.5. Install VTK
+================
+
+3.5.1. Install Vtk dependencies
+===============================
+
+- X11_Xt_LIB
+sudo apt-get install libxt-dev 
+
+
+3.5.2. Download VTK from Github
+===============================
+
+>> sudo git clone https://gitlab.kitware.com/vtk/vtk.git
+>> cd opencv
+>> sudo git checkout v8.2.s0
+
+3.5.3. Building VTK
+===================
+
+>> sudo mkdir build
+>> cd build
+>> sudo ccmake ..
+
+ccmake flags:
+BUILD_EXAMPLES=ON
+CMAKE_BUILD_TYPE=Release
+VTK_PYTHON_VERSION=3.7
+
+To find the number of threads compatible in your machine run the following command
+>> nproc
+
+To compile
+>> sudo make -j14
+
+3.6. Install QtCreator
+======================
+
+3.7. Install openMPI
+====================
+
+install libs and compiler 
+>> sudo apt-get install libopenmpi-dev
+
+3.8. Install boost
+==================
+Correct handling of line endings regardless of platform by supplying a .gitattributes file
+>> sudo git config --global core.autocrlf input
+
+>> sudo git clone --recursive https://github.com/boostorg/boost.git
+>> cd boost
+>> sudo git checkout develop # or whatever branch you want to use
+
+To generate a build configuration that places built files inside the boost directory
+>> sudo ./bootstrap.sh --prefix=/immersion/libs/boost/install
+
+Edit project-config.jam
+>> sudo gedit project-config.jam
+
+Then, append the following line (take care to insert the space between "mpi" and ";") 
+using mpi ;
+
+>> sudo ./b2 --target=shared,static
+>> sudo ./b2 headers
+>> sudo ./b2 install -j14
+
+If the build was successful, you will find two subdirectories: include of include files and lib of library files in the directory you specified to the --prefix argument above.
+
+TODO. Compile with intel mpi
+
+3.8. Install googletest
+=======================
+>> sudo git clone https://github.com/google/googletest.git
+>> cd googletest
+>> sudo git checkout release-1.8.0 # or whatever branch you want to use
+
+>> sudo mkdir build
+>> cd build
+>> sudo ccmake ..
+
+CMAKE_BUILD_TYPE=Release
+CMAKE_INSTALL_PREFIX=/immersion/libs/googletest/install
+
+>> sudo make -j14
+>> sudo make install
+
+3.8. Install flann
+==================
+
+>> sudo git clone https://github.com/mariusmuja/flann.git
+>> cd flann
+>> sudo git checkout 1.9.1 # or whatever branch you want to use
+
+>> sudo mkdir build
+>> cd build
+>> sudo cmake ..
+
+GTEST_INCLUDE_DIR=/immersion/libs/googletest/install/include                                                     
+GTEST_LIBRARY=/immersion/libs/googletest/install/lib/libgtest.a                                              
+GTEST_MAIN_LIBRARY=/immersion/libs/googletest/install/lib/libgtest_main.a 
+CMAKE_INSTALL_PREFIX=/immersion/libs/flann/install
+
+>> sudo make -j14
+>> sudo make install
+
+3.7. Install PCL
+======================
+
+>> sudo git clone https://github.com/PointCloudLibrary/pcl.git
+>> cd pcl
+>> sudo git checkout pcl-1.9.1 # or whatever branch you want to use
+
+>> sudo mkdir build
+>> cd build
+>> sudo cmake ..
+
+ CMAKE_BUILD_TYPE=RelWithDebInfo                                                                                 
+ CMAKE_CONFIGURATION_TYPES=Debug;Release                                                                                  
+ CMAKE_INSTALL_PREFIX=/immersion/libs/pcl/install                                                                    
+ FLANN_INCLUDE_DIR=/immersion/libs/flann/install/include/                                                         
+ FLANN_LIBRARY=/immersion/libs/flann/install/lib/                                                             
+ FLANN_LIBRARY_DEBUG=/immersion/libs/flann/install/lib/  
+ VTK_DIR=/immersion/libs/VTK/build/ 
+ Boost_INCLUDE_DIR=/immersion/libs/boost/install/include 
+
+>> sudo make -j11
+
+
+***************************
+4. INSTALL HARDWARE DRIVERS
+***************************
+
+4.1 TP-Link WN8200ND V2 driver for Linux
+========================================
+
+clone git
+>> sudo git clone https://github.com/luckynzm/tlwn8200nddriver.git
+>> cd tlwn8200nddriver/
+>> sudo dkms add .
+>> sudo dkms install rtl8192eu/1.0
+
+Enabling on Ubuntu and derivatives (like Linux Mint)
+>> nano /etc/modules
+
+Put the 8192eu at the end of the file and reboot (if you want to).
+
+Verify that the driver has loaded:
+>> lsmod | grep 8192eu
+
+8192eu               1101824  0
+cfg80211              614400  4 iwlmvm,iwlwifi,mac80211,8192eu
+
+If the output is empty try:
+
+>> sudo modprobe 8192eu
+
+and then verify again.
+If modprobe fails with Required key not available you may have to disable secure boot since you are trying to load an unsigned kernel module
+
+**************************
+5. INSTALL CAMERAS DRIVERS
+**************************
+
+5.1 OpenNI 2
+============
+
+Clone git
+>> sudo git clone https://github.com/occipital/openni2
+
+instal LibUDEV
+>> sudo apt-get install libudev-dev
+
+instal jdk
+sudo apt-get install openjdk-8-jdk
+
+make
+>> sudo make
+
+see /bin for libs and examples
+
+Creating OpenNI2 packages
+>> cd Packaging
+>> sudo ./ReleaseVersion.py x64
+
+Installer can be found under: Final
+
+5.2 IntelRealSense
+==================
+
+Clone git
+>> sudo git clone https://github.com/IntelRealSense/librealsense
+>> sudo git checkout rc
+
+Install the core packages required to build librealsense binaries and the affected kernel modules:
+>> sudo apt-get install git libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev
+>> sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+
+Run Intel Realsense permissions script located from librealsense root directory:
+>> sudo ./scripts/setup_udev_rules.sh
+
+Apply patched kernel modules
+>> sudo ./scripts/patch-realsense-ubuntu-lts.sh
+
+check install
+>> sudo dmesg | tail -n 50
+
+The log should indicate that a new uvcvideo driver has been registered.
+[ 9225.280370] usbcore: registered new interface driver uvcvideo
+[ 9225.280371] USB Video Class driver (1.1.1)
+
+Tracking Module requires hid_sensor_custom kernel module to operate properly, In order to accomplish this add the driver's name hid_sensor_custom to /etc/modules file, eg:
+>> echo 'hid_sensor_custom' | sudo tee -a /etc/modules
+
+>> sudo build
+>> cd build
+>> sudo cmake ../ -DBUILD_EXAMPLES=true -DCMAKE_BUILD_TYPE=Release
+>> sudo ccmake ..
+
+CMAKE_INSTALL_PREFIX=/immersion/libs/librealsense/install
+
+### in future compilation explore cuda, python, pcl, matlab, and openni2 binding and examples
+
+build
+>> sudo make -j8
+
+install
+>> sudo make install
+
+add library system path
+>> sudo gedit /etc/ld.so.conf.d/librealsense.conf
+Copy and paste 
+/immersion/libs/librealsense/install/lib/
+
+reload libs
+>> sudo ldconfig
+
+5.3 ASTRA SDK
+=============
+
+Download ASTRA SDK for ubuntu 18.04
+>> sudo apt-get install libsfml-dev
+
+>> cd /path/to/sdk
+>> cd samples
+>> sudo mkdir build
+>> cd build
+>> sudo ccmake ..
+>> sudo make -j8
+
+
+
+
+
+
+
