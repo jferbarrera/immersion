@@ -1,0 +1,6 @@
+option(ENABLE_CCACHE "Build with ccache." ON)
+option(BUILD_WITH_CUDA "Enable CUDA" OFF)
+option(BUILD_WITH_OPENMP "Use OpenMP" OFF)
+option(ENABLE_ZERO_COPY "Enable zero copy functionality" OFF)
+option(BUILD_WITH_STATIC_CRT "Build with static link CRT" OFF)
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
